@@ -17,12 +17,13 @@ recordRoutes.route("/record").get(function (req, res) {
   let db_connect = dbo.getDb("Twitter");
   db_connect
     .collection("tweets")
-    .find({}, { text: 1}).limit(10)
+    .find({"entities": { $exists: true }}, { _id: 1, "entities": 1 }).limit(10)
     .toArray(function (err, result) {
       if (err) throw err;
       //console.log(result);
       res.json(result);
     });
+
 });
 
 // This section will help you get a single record by id
@@ -39,14 +40,17 @@ recordRoutes.route("/record/:id").get(function (req, res) {
 
 // This section will help you create a new record.
 recordRoutes.route("/record/add").post(function (req, response) {
+  console.log(req.body.person_name);
+  let new_employee = req.body;
   let db_connect = dbo.getDb();
-  let myobj = {
+/*  let myobj = {
     name: req.body.person_name,
     position: req.body.person_position,
     level: req.body.person_level,
-  };
-  db_connect.collection("tweets").insertOne(myobj, function (err, res) {
+  };*/
+  db_connect.collection("employee").insertOne(new_employee, function (err, res) {
     if (err) throw err;
+    console.log("1 document added");
     response.json(res);
   });
 });
